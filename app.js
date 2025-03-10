@@ -6,6 +6,7 @@ const port = process.env.PORT || 3000
 import morgan from 'morgan'
 import cors from 'cors'
 import ConnectDB from './config/db.js'
+import web from './routes/web.js'
 
 ConnectDB()
 
@@ -13,9 +14,7 @@ app.use(express.json())
 app.use(morgan('dev'))
 app.use(cors())
 
-app.get("/",(req,res)=>{
-    return res.send("Hello")
-})
+app.use("/api/v1/auth",web)
 
 app.listen(port,()=>{
     console.log(`Server is listening on port: http://localhost:${port}`);
