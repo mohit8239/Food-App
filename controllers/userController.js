@@ -1,5 +1,7 @@
 import mongoose from "mongoose";
 import UserModel from "../model/userModel.js";
+import bcrypt from "bcrypt"
+import jwt from 'jsonwebtoken'
 
 class UserControl{
     static UserRegister = async(req,res)=>{
@@ -12,10 +14,14 @@ class UserControl{
                 if(existing){
                     return res.status(500).send({"message":"User already registered"})
                 }
+                //Creating Salt
+                const salt = bcrypt.genSaltSync(10)
+                //Hashing password
+                const hashedpassword = await bcrypt.hash(password,salt)
                 const user = await UserModel.create({
                     userName:userName,
                     email:email,
-                    password:password,
+                    password:hashedpassword,
                     address:address,
                     phone:phone
                    })
@@ -25,6 +31,31 @@ class UserControl{
             res.status(500)
             console.log(error)
            }
+    }
+
+    static UserLogin = async(req,res)=>{
+        const{email,password} = req.body
+        if(!email || !password){
+            return res.status(500).send({"message":"Email or password is missing"})
+        }
+        const user = await UserModel.findOne({email:email})
+        if(!user){
+            return res.status(404).send({"message":"Email not registered"})
+        // }else{
+        //     return res.send({"message":"User Logged in"})   
+         }
+            const isMatch = await bcrypt.compare(password,user.password)
+            if(!isMatch){
+                return res.status(500).send({"message":"Password does not match"})
+            }else{
+                //token
+                const token = jwt.sign({id:user._id},process.env.Secret,{expiresIn:"2d"})
+                return res.status(200).send({"message":"User Logged in",token})
+            }
+    }
+
+    static loggedUser = async(req,res)=>{
+        res.send({"User":"data"})
     }
 }
 
