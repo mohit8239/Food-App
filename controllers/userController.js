@@ -55,8 +55,38 @@ class UserControl{
     }
 
     static loggedUser = async(req,res)=>{
-        res.send({"User":"data"})
+        const user = await UserModel.findById({_id:req.body.id})
+        if(!user){
+            return res.status(401).send({"message":"User not found"})
+        }
+        user.password = undefined
+        res.status(200).send({message:"User get successfully",user})
+    }
+
+    static updateUser = async(req,res)=>{
+        const user = await UserModel.findById({_id:req.body.id})
+        if(!user){
+            return res.status(401).send({"message":"User not found"})
+        }
+        const{userName,address,phone} = req.body
+        if(userName){
+            user.userName = userName
+        }
+        if(address){
+            user.address = address
+        }
+        if(phone){
+            user.phone = phone
+        }
+        //Save
+        await user.save()
+
+        user.password = undefined
+
+        res.status(200).send({message:"User updated successfully",user})
+
     }
 }
+
 
 export default UserControl

@@ -6,4 +6,5 @@ const router = express.Router()
 router.post('/register',UserControl.UserRegister)
 router.post('/login',UserControl.UserLogin)
 router.get('/getuser',authmiddleware,UserControl.loggedUser)
+router.put('/updateuser',authmiddleware,UserControl.updateUser)
 export default router

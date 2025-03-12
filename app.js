@@ -17,6 +17,7 @@ app.use(cors())
 app.use("/api/v1/auth",web)
 app.use("/api/v1/auth",web)
 app.use("/api/v1/auth",web)
+app.use("/api/v1/auth",web)
 
 app.listen(port,()=>{
     console.log(`Server is listening on port: http://localhost:${port}`);
